@@ -65,7 +65,7 @@ def main():
     args = argParser.parse_args()
     
     extended = None
-    if len(args.e) == 1:
+    if args.e != None:
         extended = recursePath(args.e[0])
     
     pathdict = {}
