@@ -30,37 +30,37 @@ def pickTheLint(object, line, path, subpatch=None):
     print(message)
 
 def recursePath(path):
+    '''Build a dictionary of {filename: path}s, scanning the given path recursively'''
     tail = os.path.split(path)[1]
     if len(tail) and tail[0] == '.':
-        return []
+        return {}
     if os.path.isfile(path):
         filename, extension = os.path.splitext(tail)
         if extension == '.pd':
-            return [(path, filename)]
+            return {filename: path}
     if os.path.isdir(path):
-        paths = []
+        paths = {}
         for subfile in os.listdir(path):
             subpath = os.path.join(path, subfile)
-            paths += recursePath(subpath)
+            paths = {**paths, **recursePath(subpath)}
         return paths
-    return []
+    return {}
 
 def main():
     argParser = argparse.ArgumentParser(description='Scan pd files for non-vanilla objects')
-    parser.add_argument('-e', action='append')
-    parser.add_argument('paths', nargs='*')
+    argParser.add_argument('-e', action='append')
+    argParser.add_argument('paths', nargs='*')
     
-    pathlist = []
-    if len(sys.argv) > 1:
-        for path in sys.argv[1:]:
-            pathlist += recursePath(path)
+    args = argParser.parse_args()
+    pathdict = {}
+    if len(args.paths) >= 1:
+        for path in args.paths:
+            pathdict = {**pathdict, **recursePath(path)}
     else:
-        pathlist += recursePath('./')
+        pathdict = recursePath('./')
     
-    abstractions = {pair[1] for pair in recursePath('./')}
-    
-    for path, _ in pathlist:
-        lint(path, abstractions)
+    for _, path in pathdict.items():
+        lint(path, pathdict)
 
 if __name__ == '__main__':
     main()
