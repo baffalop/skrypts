@@ -56,15 +56,17 @@ def recursePath(path):
     return {}
 
 def main():
-    argParser = argparse.ArgumentParser(description='Scan pd files for non-vanilla objects')
-    argParser.add_argument('--extended', '-e', nargs=1)
-    argParser.add_argument('paths', nargs='*', default='./')
+    eHelp = 'Path to Pd-extended or similar collection of libraries. The linter will tell you which library each linted object comes from.'
+    pathHelp = 'Pd files or directories to scan. If none are given, current working directory is scanned. Directories are scanned recursively.'
+    argParser = argparse.ArgumentParser(description='Scan pd files for non-vanilla objects.')
+    argParser.add_argument('-e', nargs=1, metavar='PATH', help=eHelp)
+    argParser.add_argument('paths', nargs='*', metavar='PATH', default='./', help=pathHelp)
     
     args = argParser.parse_args()
     
     extended = None
-    if len(args.extended) == 1:
-        extended = recursePath(args.extended[0])
+    if len(args.e) == 1:
+        extended = recursePath(args.e[0])
     
     pathdict = {}
     for path in args.paths:
