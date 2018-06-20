@@ -31,9 +31,9 @@ def pickTheLint(object, line, path, subpatch=None, extended=None):
     if extended != None:
         if object in extended:
             libraryName = os.path.split(extended[object])[0].split('/')[-1]
-            extendedMessage = ' (Found in %s)' % libraryName
+            extendedMessage = ' (%s)' % libraryName
         else:
-            extendedMessage = ' (Not found in extended)'
+            extendedMessage = ' (not found in extended)'
     
     message = 'Line {}{} of {}: {}{}'.format(line, subpatchMessage, path, object, extendedMessage)
     print(message)
