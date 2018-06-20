@@ -10,4 +10,4 @@ Scans pd patches or directories for non-vanilla Pd objects, outputting where the
 
 TODO: also search a specified Pd-extended path to tell you which library the object is from.
 
-**Arguments:** Currently, arguments are a list of files and/or directories to scan. Example: `vanillinter.py main.pd abstractions/` If none provided, it will scan the current working directory.
+**Arguments:** Currently, arguments are a list of files and/or directories to scan. Example: `vanillinter.py main.pd abstractions/`. If none provided, it will scan the current working directory.
