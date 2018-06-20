@@ -7,7 +7,7 @@ import argparse
 
 vanilla = {'bang','change','float','int','makefilename','moses','pack','print','receive','route','select','send','spigot','swap','symbol','trigger','unpack','until','value','choice','&','|','<<','>>','&&','||','%','+','-','*','/','pow','>','>=','=','<=','<','clip','max','min','mod','div','sin','cos','tan','atan','atan2','exp','log','abs','sqrt','pow','mtof','ftom','dbtorms','rmstodb','dbtopow','powtodb','random','wrap','expr','cputime','delay','line','metro','pipe','realtime','timer','makenote','notein','ctlin','pgmin','bendin','touchin','polytouchin','midiin','sysexin','noteout','ctlout','pgmout','bendout','touchout','polytouchout','midiout','stripnote','tabread','tabread4','tabwrite','soundfiler','loadbang','serial','netsend','netreceive','qlist','textfile','openpanel','savepanel','bag','poly','key','keyup','keyname','declare','adc~','dac~','bang~','block~','switch~','catch~','throw~','line~','vline~','threshold~','snapshot~','vsnapshot~','samplerate~','readsf~','receive~','send~','writesf~','sig~','+~','-~','*~','/~','max~','min~','clip~','q8_rsqrt~','q8_sqrt~','wrap~','fft~','ifft~','rfft~','rifft~','framp~','mtof~','ftom~','rmstodb~','dbtorms~','rmstopow~','powtorms~','pow~','log~','exp~','abs~','expr~','fexpr~','phasor~','cos~','osc~','tabwrite~','tabplay~','tabread~','tabread4~','tabosc4~','tabsend~','tabreceive~','bonk~','fiddle~','env~','vcf~','noise~','hip~','lop~','bp~','biquad~','samphold~','print~','rpole~','rzero~','rzero_rev~','cpole~','czero~','czero_rev~','complex-mod~','hilbert~','rev1~','rev2~','rev3~','delwrite~','delread~','vd~','pd','inlet','outlet','inlet~','outlet~','table','drawcurve','filledcurve','drawpolygon','filledpolygon','plot','drawnumber','struct','pointer','get','set','element','getsize','setsize','append','sublist','t','f','until','list','s','hsl','nbx','length','del','tgl','r','bng','sel','gate','i','r~','s~'}
 
-def lint(path, abstractions):
+def lint(path, abstractions, extended=None):
     global vanilla
     # print('Scanning ' + path)
     with open(path, 'r') as pdFile:
@@ -22,11 +22,20 @@ def lint(path, abstractions):
                 elif words[1] == 'obj': 
                     objectName = words[4].strip(';')
                     if objectName not in vanilla and objectName not in abstractions:
-                        pickTheLint(objectName, lineNumber, path, canvasStack[-1])
+                        pickTheLint(objectName, lineNumber, path, canvasStack[-1], extended)
 
-def pickTheLint(object, line, path, subpatch=None):
+def pickTheLint(object, line, path, subpatch=None, extended=None):
     subpatchMessage = ' (subpatch %s)' % subpatch if subpatch else ''
-    message = 'Line {}{} of {}: {}'.format(line, subpatchMessage, path, object)
+    
+    extendedMessage = ''
+    if extended != None:
+        if object in extended:
+            libraryName = os.path.split(extended[object])[0].split('/')[-1]
+            extendedMessage = ' (Found in %s)' % libraryName
+        else:
+            extendedMessage = ' (Not found in extended)'
+    
+    message = 'Line {}{} of {}: {}{}'.format(line, subpatchMessage, path, object, extendedMessage)
     print(message)
 
 def recursePath(path):
@@ -36,7 +45,7 @@ def recursePath(path):
         return {}
     if os.path.isfile(path):
         filename, extension = os.path.splitext(tail)
-        if extension == '.pd':
+        if extension == '.pd' or extension == '.pd_linux':
             return {filename: path}
     if os.path.isdir(path):
         paths = {}
@@ -48,19 +57,21 @@ def recursePath(path):
 
 def main():
     argParser = argparse.ArgumentParser(description='Scan pd files for non-vanilla objects')
-    argParser.add_argument('-e', action='append')
-    argParser.add_argument('paths', nargs='*')
+    argParser.add_argument('--extended', '-e', nargs=1)
+    argParser.add_argument('paths', nargs='*', default='./')
     
     args = argParser.parse_args()
+    
+    extended = None
+    if len(args.extended) == 1:
+        extended = recursePath(args.extended[0])
+    
     pathdict = {}
-    if len(args.paths) >= 1:
-        for path in args.paths:
-            pathdict = {**pathdict, **recursePath(path)}
-    else:
-        pathdict = recursePath('./')
+    for path in args.paths:
+        pathdict = {**pathdict, **recursePath(path)}
     
     for _, path in pathdict.items():
-        lint(path, pathdict)
+        lint(path, pathdict, extended)
 
 if __name__ == '__main__':
     main()
