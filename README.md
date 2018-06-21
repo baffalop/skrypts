@@ -4,7 +4,7 @@ Useful scripts, of all stripes.
 
 ## Vanillinter
 
-Now with extended library search! Scans pd patches or directories for non-vanilla Pd objects, outputting where they are found (line number, subpatch, file) and which library they belong to.
+Now with extended library search! Scans [pure data](https://puredata.info/) patches or directories for non-vanilla Pd objects, outputting where they are found (line number, subpatch, file) and which library they belong to.
 
 Requires Python 3. Made for Mac but should hopefully work on Windows as well.
 
