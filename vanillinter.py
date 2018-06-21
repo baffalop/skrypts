@@ -9,20 +9,28 @@ vanilla = {'bang','change','float','int','makefilename','moses','pack','print','
 
 def lint(path, abstractions, extended=None):
     global vanilla
-    # print('Scanning ' + path)
     with open(path, 'r') as pdFile:
         canvasStack = [None]
-        for lineNumber, contents in enumerate(pdFile):
-            words = contents.split()
-            if len(words) >= 5:
-                if words[1] == 'canvas' and re.match('.*[^\d;]', words[6]):
-                    canvasStack.append(words[6])
-                elif words[1] == 'restore':
-                    canvasStack.pop()
-                elif words[1] == 'obj': 
-                    objectName = words[4].strip(';')
-                    if objectName not in vanilla and objectName not in abstractions:
-                        pickTheLint(objectName, lineNumber, path, canvasStack[-1], extended)
+        
+        # shortcircuit if format doesn't seem like regular pd
+        try:
+            if pdFile.readline().split()[0] != '#N':
+                return
+            
+            for lineNumber, contents in enumerate(pdFile):
+                words = contents.split()
+                if len(words) >= 5:
+                    if words[1] == 'canvas' and re.match('.*[^\d;]', words[6]):
+                        canvasStack.append(words[6])
+                    elif words[1] == 'restore':
+                        canvasStack.pop()
+                    elif words[1] == 'obj': 
+                        objectName = words[4].strip(';')
+                        if objectName not in vanilla and objectName not in abstractions:
+                            pickTheLint(objectName, lineNumber, path, canvasStack[-1], extended)
+            
+        except UnicodeDecodeError:
+            return
 
 def pickTheLint(object, line, path, subpatch=None, extended=None):
     subpatchMessage = ' (subpatch %s)' % subpatch if subpatch else ''
