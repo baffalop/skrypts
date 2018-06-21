@@ -74,7 +74,7 @@ if __name__ == '__main__':
     pathHelp = 'Pd files or directories to scan. If none are given, current working directory is scanned. Directories are scanned recursively.'
     argParser = argparse.ArgumentParser(description='Scan pd files for non-vanilla objects.')
     argParser.add_argument('-e', nargs=1, metavar='PATH', action='append', help=eHelp)
-    argParser.add_argument('paths', nargs='*', metavar='PATH', default='./', help=pathHelp)
+    argParser.add_argument('paths', nargs='*', metavar='PATH', default=[os.getcwd()], help=pathHelp)
     
     args = argParser.parse_args()
     

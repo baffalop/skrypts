@@ -6,7 +6,7 @@ Useful scripts, of all stripes.
 
 Now with extended library search! Scans pd patches or directories for non-vanilla Pd objects, outputting where they are found (line number, subpatch, file) and which library they belong to.
 
-Requires Python 3. Made for Mac but should hopefully work on Windows as well (though perhaps not without arguments as './' won't be understood).
+Requires Python 3. Made for Mac but should hopefully work on Windows as well.
 
 **Arguments:**
  -  -e Optional path to a directory containing Pd-extended libraries. The linter will say which library each object it finds comes from.
