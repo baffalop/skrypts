@@ -88,7 +88,7 @@ def main(args):
 
     ignore = {}
     if args.i != None:
-        ignore = { pathTools.abspath(ignorepath) for ignorepath in args.i }
+        ignore = {pathTools.abspath(ignorepath) for ignorepath in args.i}
 
     pathdict = {}
     for path in args.f:
