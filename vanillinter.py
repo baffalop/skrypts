@@ -99,7 +99,7 @@ if __name__ == '__main__':
     eHelp = 'Path(s) to Pd-extended or similar collection of libraries. The linter will tell you which library each linted object comes from.'
     pathHelp = 'Pd files or directories to scan. If none are given, current working directory is scanned. Directories are scanned recursively.'
     argParser = argparse.ArgumentParser(description='Scan pd files for non-vanilla objects.')
-    argParser.add_argument('-f', nargs='*', metavar='PATH', default=[os.getcwd()], help=pathHelp)
+    argParser.add_argument('-f', nargs='+', metavar='PATH', default=[os.getcwd()], help=pathHelp)
     argParser.add_argument('-e', nargs='+', metavar='PATH', help=eHelp)
     argParser.add_argument('-i', nargs='+', metavar='PATH', help='Directories to ignore when scanning recursively')
     argParser.add_argument('--verbose', '-v', action='store_true', help='Verbose output')
