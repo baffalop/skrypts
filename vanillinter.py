@@ -14,12 +14,12 @@ def lint(path, abstractions, extended=None, verbose=False):
         print('Linting ' + pathTools.relpath(path))
     with open(path, 'r') as pdFile:
         canvasStack = [None]
-        
+
         # shortcircuit if format doesn't seem like regular pd
         try:
             if pdFile.readline().split()[0] != '#N':
                 return
-            
+
             for lineNumber, contents in enumerate(pdFile):
                 words = contents.split()
                 if len(words) >= 5:
@@ -31,14 +31,14 @@ def lint(path, abstractions, extended=None, verbose=False):
                         objectName = words[4].strip(';')
                         if objectName not in vanilla and objectName not in abstractions:
                             pickTheLint(objectName, lineNumber, path, canvasStack[-1], extended)
-            
+
         except UnicodeDecodeError:
             return
 
 def pickTheLint(object, line, path, subpatch=None, extended=None):
     path = pathTools.relpath(path)
     subpatchMessage = ' (subpatch %s)' % subpatch if subpatch else ''
-    
+
     extendedMessage = ''
     if extended != None:
         if object in extended:
@@ -46,7 +46,7 @@ def pickTheLint(object, line, path, subpatch=None, extended=None):
             extendedMessage = ' (%s)' % libraryName
         else:
             extendedMessage = ' (not found in extended)'
-    
+
     message = 'Line {}{} of {}: {}{}'.format(line, subpatchMessage, path, object, extendedMessage)
     print(message)
 
@@ -83,15 +83,15 @@ def main(args):
         extended = {}
         for path in args.e:
             extended = {**extended, **recursePath(path)}
-    
+
     ignore = {}
     if args.i != None:
         ignore = { pathTools.abspath(ignorepath) for ignorepath in args.i }
-    
+
     pathdict = {}
     for path in args.f:
         pathdict = {**pathdict, **recursePath(path, args.verbose, ignore)}
-    
+
     for _, path in pathdict.items():
         lint(path, pathdict, extended, args.verbose)
 
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     argParser.add_argument('-e', nargs='+', metavar='PATH', help=eHelp)
     argParser.add_argument('-i', nargs='+', metavar='PATH', help='Directories to ignore when scanning recursively')
     argParser.add_argument('--verbose', '-v', action='store_true', help='Verbose output')
-    
+
     args = argParser.parse_args()
-    
+
     main(args)
