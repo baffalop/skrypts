@@ -11,7 +11,7 @@ vanilla = {'bang','change','float','int','makefilename','moses','pack','print','
 def lint(path, abstractions, extended=None, verbose=False):
     global vanilla
     if verbose:
-        print('Linting ' + path)
+        print('Linting ' + pathTools.relpath(path))
     with open(path, 'r') as pdFile:
         canvasStack = [None]
         
@@ -36,6 +36,7 @@ def lint(path, abstractions, extended=None, verbose=False):
             return
 
 def pickTheLint(object, line, path, subpatch=None, extended=None):
+    path = pathTools.relpath(path)
     subpatchMessage = ' (subpatch %s)' % subpatch if subpatch else ''
     
     extendedMessage = ''
@@ -63,16 +64,16 @@ def recursePath(path, verbose=False, ignore={}):
     if pathTools.isdir(path):
         if pathTools.abspath(path) in ignore:
             if verbose:
-                print('Ignoring ' + path)
+                print('Ignoring ' + pathTools.relpath(path))
             return {}
         if verbose:
-            print('Preparing directory ' + path)
+            print('Preparing directory ' + pathTools.relpath(path))
         paths = {}
         for subfile in os.listdir(path):
             subpath = pathTools.join(path, subfile)
             paths = {**paths, **recursePath(subpath, verbose, ignore)}
         if verbose:
-            print('Done with directory ' + path)
+            print('Done with directory ' + pathTools.relpath(path))
         return paths
     return {}
 
@@ -81,27 +82,27 @@ def main(args):
     if args.e != None:
         extended = {}
         for path in args.e:
-            extended = {**extended, **recursePath(path[0])}
+            extended = {**extended, **recursePath(path)}
     
     ignore = {}
     if args.i != None:
-        ignore = { pathTools.abspath(ilist[0]) for ilist in args.i }
+        ignore = { pathTools.abspath(ignorepath) for ignorepath in args.i }
     
     pathdict = {}
-    for path in args.paths:
+    for path in args.f:
         pathdict = {**pathdict, **recursePath(path, args.verbose, ignore)}
     
     for _, path in pathdict.items():
         lint(path, pathdict, extended, args.verbose)
 
 if __name__ == '__main__':
-    eHelp = 'Path to Pd-extended or similar collection of libraries. The linter will tell you which library each linted object comes from.'
+    eHelp = 'Path(s) to Pd-extended or similar collection of libraries. The linter will tell you which library each linted object comes from.'
     pathHelp = 'Pd files or directories to scan. If none are given, current working directory is scanned. Directories are scanned recursively.'
     argParser = argparse.ArgumentParser(description='Scan pd files for non-vanilla objects.')
-    argParser.add_argument('-e', nargs=1, metavar='PATH', action='append', help=eHelp)
-    argParser.add_argument('-i', nargs=1, metavar='PATH', action='append', help='Directory to ignore when scanning recursively')
-    argParser.add_argument('--verbose', '-v', action='store_true')
-    argParser.add_argument('paths', nargs='*', metavar='PATH', default=[os.getcwd()], help=pathHelp)
+    argParser.add_argument('-f', nargs='*', metavar='PATH', default=[os.getcwd()], help=pathHelp)
+    argParser.add_argument('-e', nargs='+', metavar='PATH', help=eHelp)
+    argParser.add_argument('-i', nargs='+', metavar='PATH', help='Directories to ignore when scanning recursively')
+    argParser.add_argument('--verbose', '-v', action='store_true', help='Verbose output')
     
     args = argParser.parse_args()
     
