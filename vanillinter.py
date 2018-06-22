@@ -44,7 +44,7 @@ def pickTheLint(object, line, path, subpatch=None, extended=None):
     extendedMessage = ''
     if extended != None:
         if object in extended:
-            libraryName = pathTools.split(extended[object])[0].split('/')[-1]
+            libraryName = pathTools.dirname(extended[object]).split(os.sep)[-1]
             extendedMessage = ' (%s)' % libraryName
         else:
             extendedMessage = ' (not found in extended)'
@@ -54,15 +54,18 @@ def pickTheLint(object, line, path, subpatch=None, extended=None):
 
 def recursePath(path, verbose=False, ignore={}):
     '''Build a dictionary of {filename: path}s, scanning the given path recursively'''
-    tail = pathTools.split(path)[1]
-    if len(tail) and tail[0] == '.':
+    basename = pathTools.basename(path)
+
+    if len(basename) and basename[0] == '.':
         return {}
+
     if pathTools.isfile(path):
-        filename, extension = pathTools.splitext(tail)
+        filename, extension = pathTools.splitext(basename)
         if extension == '.pd' or extension == '.pd_linux':
             if verbose:
-                print('Found pd file ' + filename + extension)
+                print('Found pd file ' + basename)
             return {filename: path}
+
     if pathTools.isdir(path):
         if pathTools.abspath(path) in ignore:
             if verbose:
