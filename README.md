@@ -19,3 +19,10 @@ Requires Python 3. Made for Mac but should hopefully work on Windows as well.
 `vanillinter.py -f main.pd my-abstractions/ -e ~/Pd/lib/Pd-extended/ -i samples-n-junk/ big-horrible-dir/`
 
 The set of vanilla objects might be incomplete at this point. If you encounter any false negatives, please let me know.
+
+## Recky
+
+Wee utility script for executing a file processing command over a globbed pattern, and setting the output file to the original file with a different extension/suffix. Particularly useful for batch processing with ffmpeg or ImageMagick.
+
+### Example:
+`recky.sh 'ffmpeg -i # -f mp3' mp3 sample*.wav` (sample01.wav is converted to sample01.mp3 etc.)
