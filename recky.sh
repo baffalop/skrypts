@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-if [[ ${#@} < 3 ]]; then
-    echo "Usage: $0 COMMAND EXTENSION [FILES|GLOB]"
+if (( ${#@} < 3 )); then
+    echo 'Usage: recky.sh COMMAND EXTENSION [FILES|GLOB]'
+    echo "Where: '#' in COMMAND will be replaced by each file in FILES"
     exit 65
 fi
 
