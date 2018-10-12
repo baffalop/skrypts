@@ -85,18 +85,24 @@ def recursePath(path, verbose=False, ignore={}):
 def main(args):
     extended = None
     if args.e != None:
+        if args.verbose:
+            print('BUILDING EXTENDED PATH')
         extended = {}
         for path in args.e:
-            extended = {**extended, **recursePath(path)}
+            extended = {**extended, **recursePath(path, args.verbose)}
 
     ignore = {}
     if args.i != None:
         ignore = {pathTools.abspath(ignorepath) for ignorepath in args.i}
 
+    if args.verbose:
+        print('BUILDING PATH FOR LINTING')
     pathdict = {}
     for path in args.f:
         pathdict = {**pathdict, **recursePath(path, args.verbose, ignore)}
 
+    if args.verbose:
+        print('LINTING')
     for _, path in pathdict.items():
         lint(path, pathdict, extended, args.verbose)
 
