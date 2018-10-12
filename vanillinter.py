@@ -61,7 +61,7 @@ def recursePath(path, verbose=False, ignore={}):
 
     if pathTools.isfile(path):
         filename, extension = pathTools.splitext(basename)
-        if extension == '.pd' or extension == '.pd_linux':
+        if extension == '.pd' or extension[0:4] == '.pd_':
             if verbose:
                 print('Found pd file ' + basename)
             return {filename: path}
