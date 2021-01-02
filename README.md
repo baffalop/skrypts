@@ -2,6 +2,23 @@
 
 Useful scripts, of all stripes.
 
+## Grab
+
+Wrapper for ffmpeg commands I use for processing screengrabs. Scale, speed up, convert to gif...
+
+`grab -h` for help
+
+### Example
+```bash
+grab -gs2 -o processed input.mov
+```
+
+...will run...
+
+```bash
+ffmpeg -i input.mov -vf fps=20,setpts=.5*PTS,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse processed.gif
+```
+
 ## Vanillinter
 
 Now with extended library search! Scans [pure data](https://puredata.info/) patches or directories for non-vanilla Pd objects, outputting where they are found (line number, subpatch, file) and which library they belong to.
