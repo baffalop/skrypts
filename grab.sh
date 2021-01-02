@@ -11,7 +11,6 @@ if [[ "$?" != '0' ]]; then
     exit 1
 fi
 
-echo "args is $args"
 eval set -- "$args"
 
 while :
@@ -44,7 +43,7 @@ do case "$1" in
         ;;
     -s )
         if [ -n "$2" ] && [[ "$2" =~ ^[0-9]*\.?[0-9]+$ ]]; then
-            shift; frames=$( bc<<<"scale=2; 1/$1" )
+            shift; frames=$( bc<<<"scale=1; 1/$1" )
         else    
             echo "Error: $1 requires numeric argument" >&2
             exit 1
@@ -54,12 +53,10 @@ do case "$1" in
         shift; break ;;
 
     *)
-        echo "Error: unrecognised option $1"
+        echo "Error: unrecognised option $1" >&2
         exit 1
         ;;
 esac; shift; done
-
-echo "\$1 is $1"
 
 if [ -z "$1" ]; then
     echo 'Error: missing input path' >&2
@@ -77,5 +74,5 @@ vf="fps=${fps:-20}"
 [ -n "$width" ] && vf="$vf,scale=${width}:-1:flags=lanczos"
 [[ "$extension" == gif ]] && vf="$vf,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse"
 
-echo "ffmpeg -i $input -vf "$vf" $output.$extension"
+set -x
 ffmpeg -i "$input" -vf "$vf" "$output.$extension"
